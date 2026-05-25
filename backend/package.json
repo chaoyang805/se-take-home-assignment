@@ -1,6 +1,7 @@
 {
   "name": "mcdonalds-order-backend",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "tsx src/server.ts",
     "start": "node dist/server.js",
