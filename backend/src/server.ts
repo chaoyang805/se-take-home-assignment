@@ -4,6 +4,7 @@ import cors from 'cors';
 import { OrderProcessingEngine } from './domain/service/OrderProcessingEngine.js';
 import { OrderService } from './application/service/OrderService.js';
 import { BotService } from './application/service/BotService.js';
+import { createHealthRouter } from './infrastructure/http/health.js';
 import { createRouter } from './infrastructure/http/routes.js';
 import { WebSocketManager } from './infrastructure/ws/WebSocketManager.js';
 import { logger } from './infrastructure/logger.js';
@@ -11,6 +12,7 @@ import { logger } from './infrastructure/logger.js';
 const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 const app: express.Express = express();
+app.use(createHealthRouter());
 app.use(cors({ origin: ALLOWED_ORIGIN }));
 app.use(express.json());
 
