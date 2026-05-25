@@ -1,7 +1,7 @@
 export interface Order {
   id: number;
   type: 'VIP' | 'NORMAL';
-  status: 'PENDING' | 'COMPLETE';
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETE';
   createdAt: number;
   completedAt?: number;
 }

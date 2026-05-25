@@ -69,7 +69,8 @@ Pages: `/orders` (PENDING + COMPLETE columns), `/bots` (bot list with controls).
 - VIP orders inserted after all existing VIPs, before all NORMAL orders
 - `removeBot()` always removes the **newest** bot; if processing, the order returns to its original PENDING position
 - Each bot processes exactly one order at a time (10s `setTimeout`)
-- No order leaves PENDING status until the 10s timer completes — frontend only sees PENDING or COMPLETE
+- When a bot picks an order, it calls `order.startProcessing()` → status becomes PROCESSING, preventing double assignment
+- Frontend PENDING column shows both PENDING and PROCESSING orders (`status !== 'COMPLETE'`) — only two visual states
 
 ## Testing
 

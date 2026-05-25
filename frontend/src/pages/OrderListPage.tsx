@@ -30,7 +30,7 @@ export default function OrderListPage() {
     }
   });
 
-  const pendingOrders = orders.filter((o) => o.status === 'PENDING');
+  const pendingOrders = orders.filter((o) => o.status !== 'COMPLETE');
   const completedOrders = orders.filter((o) => o.status === 'COMPLETE');
 
   return (

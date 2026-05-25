@@ -80,6 +80,31 @@ describe('OrderProcessingEngine', () => {
       expect(bot.currentOrderId).toBeUndefined();
     });
 
+    it('should only assign an order to one bot when multiple idle bots exist', () => {
+      // Create multiple idle bots first
+      const bot1 = engine.addBot();
+      const bot2 = engine.addBot();
+      expect(bot1.status).toBe('IDLE');
+      expect(bot2.status).toBe('IDLE');
+
+      // Now create a single order
+      engine.createOrder('NORMAL');
+
+      // The order should be PROCESSING, not PENDING
+      const orders = engine.getOrders();
+      expect(orders[0].status).toBe('PROCESSING');
+
+      // Only one bot should be processing, the other should stay IDLE
+      const bots = engine.getBots();
+      const processingBots = bots.filter((b) => b.status === 'PROCESSING');
+      const idleBots = bots.filter((b) => b.status === 'IDLE');
+
+      expect(processingBots.length).toBe(1);
+      expect(idleBots.length).toBe(1);
+      expect(processingBots[0].currentOrderId).toBe(1);
+      expect(idleBots[0].currentOrderId).toBeUndefined();
+    });
+
     it('should emit bot:status_changed when bot starts processing', () => {
       const listener = vi.fn();
       engine.addListener('bot:status_changed', listener);
@@ -111,6 +136,14 @@ describe('OrderProcessingEngine', () => {
   });
 
   describe('order processing', () => {
+    it('should set order to PROCESSING when bot takes it', () => {
+      engine.createOrder('NORMAL');
+      engine.addBot();
+
+      const orders = engine.getOrders();
+      expect(orders[0].status).toBe('PROCESSING');
+    });
+
     it('should complete order after 10 seconds', () => {
       const listener = vi.fn();
       engine.addListener('order:completed', listener);
@@ -185,12 +218,18 @@ describe('OrderProcessingEngine', () => {
       engine.createOrder('NORMAL');
       engine.addBot();
 
+      // Verify order is PROCESSING before removal
+      const ordersBefore = engine.getOrders();
+      expect(ordersBefore[0].status).toBe('PROCESSING');
+
       engine.removeBot();
 
+      // After removal, order should be back to PENDING and maintain VIP priority
       const orders = engine.getOrders();
       const pending = orders.filter((o) => o.status === 'PENDING');
       expect(pending.length).toBe(2);
       expect(pending[0].id).toBe(1); // VIP still first
+      expect(pending[0].status).toBe('PENDING');
     });
 
     it('should do nothing when no bots exist', () => {

@@ -128,14 +128,14 @@ describe('BotControls', () => {
 describe('NavBar', () => {
   it('should render both nav links', () => {
     renderWithRouter(<NavBar />);
-    expect(screen.getByText('订单列表')).toBeDefined();
-    expect(screen.getByText('Bot 列表')).toBeDefined();
+    expect(screen.getByText('我的订单')).toBeDefined();
+    expect(screen.getByText('Bot 管理')).toBeDefined();
   });
 
   it('should have links pointing to correct routes', () => {
     renderWithRouter(<NavBar />);
-    const orderLink = screen.getByText('订单列表');
-    const botLink = screen.getByText('Bot 列表');
+    const orderLink = screen.getByText('我的订单');
+    const botLink = screen.getByText('Bot 管理');
     expect(orderLink.getAttribute('href')).toBe('/orders');
     expect(botLink.getAttribute('href')).toBe('/bots');
   });

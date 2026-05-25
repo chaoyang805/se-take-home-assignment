@@ -88,6 +88,7 @@ export class OrderProcessingEngine {
       return;
     }
 
+    order.startProcessing();
     bot.assignOrder(order.id);
     this.events.emit('bot:status_changed', {
       botId: bot.id,

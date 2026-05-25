@@ -55,7 +55,7 @@ backend/src/
 Order {
   id: number           // 全局递增
   type: OrderType      // 'VIP' | 'NORMAL'
-  status: OrderStatus  // 'PENDING' | 'COMPLETE'
+  status: OrderStatus  // 'PENDING' | 'PROCESSING' | 'COMPLETE'
   createdAt: number
   completedAt?: number // HH:MM:SS 格式展示用
 }
@@ -138,8 +138,8 @@ removeBot()
 
 tryProcessNext(bot)
   → 找 orders[] 中第一个 status === PENDING 的订单
-  → 若有: bot.status = PROCESSING, order.status 保持 PENDING
-         setTimeout 10s → order.status = COMPLETE, emit order:completed
+  → 若有: bot.status = PROCESSING, order.startProcessing()
+         setTimeout 10s → order.complete(), emit order:completed
          emit bot:status_changed (PROCESSING → IDLE)
          tryProcessNext(bot) // 继续处理下一个
   → 若无: bot.status = IDLE, emit bot:status_changed(IDLE)
@@ -181,8 +181,10 @@ frontend/src/
   DELETE /api/bots → GET /api/bots → 更新 Bot 列表
 
 实时事件:
-  WS order:completed → 从 PENDING 移除该订单，加入 COMPLETE
+  WS order:completed → PENDING/PROCESSING 订单进入 COMPLETE
   WS bot:status_changed → 更新对应 Bot 卡片状态
+
+  PENDING 列: orders.filter(status !== 'COMPLETE') — 包含 PENDING 和 PROCESSING
 ```
 
 ### 测试策略

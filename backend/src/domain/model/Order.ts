@@ -40,6 +40,10 @@ export class Order {
     return this.props.completedAt;
   }
 
+  startProcessing(): void {
+    this.props.status = 'PROCESSING';
+  }
+
   complete(): void {
     this.props.status = 'COMPLETE';
     this.props.completedAt = Date.now();

@@ -24,13 +24,13 @@ export default function NavBar() {
         to="/orders"
         style={({ isActive }) => linkStyle(isActive)}
       >
-        订单列表
+        我的订单
       </NavLink>
       <NavLink
         to="/bots"
         style={({ isActive }) => linkStyle(isActive)}
       >
-        Bot 列表
+        Bot 管理
       </NavLink>
     </nav>
   );
