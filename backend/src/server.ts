@@ -8,8 +8,10 @@ import { createRouter } from './infrastructure/http/routes.js';
 import { WebSocketManager } from './infrastructure/ws/WebSocketManager.js';
 import { logger } from './infrastructure/logger.js';
 
+const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
+
 const app: express.Express = express();
-app.use(cors());
+app.use(cors({ origin: ALLOWED_ORIGIN }));
 app.use(express.json());
 
 const engine = new OrderProcessingEngine();
