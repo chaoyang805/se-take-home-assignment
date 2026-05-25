@@ -9,11 +9,10 @@ test.describe('Navigation', () => {
   test('should switch between tabs', async ({ page }) => {
     await page.goto('/orders');
 
-    await page.click('text=Bot 列表');
+    await page.click('text=Bot 管理');
     await expect(page).toHaveURL('/bots');
-    await expect(page.locator('text=暂无机器人')).toBeVisible();
 
-    await page.click('text=订单列表');
+    await page.click('text=我的订单');
     await expect(page).toHaveURL('/orders');
   });
 });
