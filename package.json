@@ -6,12 +6,6 @@
     "test": "pnpm -F mcdonalds-order-backend test && pnpm -F frontend test",
     "test:e2e": "pnpm -F frontend test:e2e"
   },
-  "pnpm": {
-    "overrides": {
-      "tldts": "7.1.0",
-      "tldts-core": "7.1.0"
-    }
-  },
   "devDependencies": {
     "concurrently": "^9.0.0"
   }
