@@ -5,3 +5,6 @@ packages:
 overrides:
   tldts: 7.1.0
   tldts-core: 7.1.0
+
+onlyBuiltDependencies:
+  - esbuild
