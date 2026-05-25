@@ -11,12 +11,16 @@
 - **WHEN** 用户点击 "New VIP Order"
 - **THEN** 一个新 VIP 订单出现在 PENDING 区域，位于所有 Normal 订单之前
 
-### Requirement: Order stays PENDING while being processed
-订单被机器人取走后 SHALL 在前端仍然保持 PENDING 状态，直至 10 秒处理完成。
+### Requirement: Order transitions to PROCESSING when bot picks it up
+订单被机器人取走后 SHALL 在后端变为 PROCESSING 状态，前端仍将其展示在 PENDING 列。
 
-#### Scenario: Order being processed remains in PENDING
+#### Scenario: Order enters PROCESSING state
 - **WHEN** 机器人取走一个 PENDING 订单开始处理
-- **THEN** 该订单在前端仍显示在 PENDING 列中，Bot 状态变为 PROCESSING
+- **THEN** 订单在后端状态变为 PROCESSING，不能再被其他 bot 取走
+
+#### Scenario: Order being processed remains in PENDING column
+- **WHEN** 订单处于 PROCESSING 状态
+- **THEN** 前端 PENDING 列同时展示 PENDING 和 PROCESSING 状态的订单
 
 ### Requirement: Order moves to COMPLETE via WebSocket event
 订单处理完成后 SHALL 通过 WebSocket `order:completed` 事件通知前端移入 COMPLETE 区域。
