@@ -41,22 +41,16 @@ class OrderEventClientImpl {
       this.scheduleReconnect();
     };
 
-    this.ws.onerror = () => {
-      console.error('[WS] Connection error');
+    this.ws.onerror = (e) => {
+      console.error('[WS] Connection error', e);
       this.ws?.close();
     };
   }
 
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
-    if (this.listeners.size === 1) {
-      this.connect();
-    }
     return () => {
       this.listeners.delete(listener);
-      if (this.listeners.size === 0) {
-        this.disconnect();
-      }
     };
   }
 
@@ -67,20 +61,18 @@ class OrderEventClientImpl {
     console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      if (this.listeners.size > 0) {
-        this.connect();
-      }
+      this.connect();
     }, delay);
   }
 
-  private disconnect(): void {
+  disconnect(): void {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
     this.ws?.close();
     this.ws = null;
-    console.log('[WS] Disconnected (no listeners)');
+    console.log('[WS] Disconnected');
   }
 }
 
