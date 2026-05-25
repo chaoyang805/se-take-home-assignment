@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Bot } from '../types';
 import { getBots, addBot, removeBot } from '../services/api';
@@ -7,8 +8,9 @@ import BotCard from '../components/BotCard';
 
 export default function BotListPage() {
   const queryClient = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: bots = [] } = useQuery<Bot[]>({
+  const { data: bots = [], isError, error: queryError } = useQuery<Bot[]>({
     queryKey: ['bots'],
     queryFn: getBots,
   });
@@ -16,14 +18,22 @@ export default function BotListPage() {
   const addBotMutation = useMutation({
     mutationFn: addBot,
     onSuccess: () => {
+      setError(null);
       queryClient.invalidateQueries({ queryKey: ['bots'] });
+    },
+    onError: (err: Error) => {
+      setError(err.message);
     },
   });
 
   const removeBotMutation = useMutation({
     mutationFn: removeBot,
     onSuccess: () => {
+      setError(null);
       queryClient.invalidateQueries({ queryKey: ['bots'] });
+    },
+    onError: (err: Error) => {
+      setError(err.message);
     },
   });
 
@@ -42,6 +52,14 @@ export default function BotListPage() {
     }
   });
 
+  if (isError) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center', color: '#d32f2f' }}>
+        加载 Bot 列表失败: {(queryError as Error)?.message || '未知错误'}
+      </div>
+    );
+  }
+
   return (
     <div>
       <BotControls
@@ -49,6 +67,11 @@ export default function BotListPage() {
         onRemove={() => removeBotMutation.mutate()}
         disabled={addBotMutation.isPending || removeBotMutation.isPending}
       />
+      {error && (
+        <div style={{ padding: '8px 16px', marginBottom: '12px', background: '#ffebee', color: '#d32f2f', borderRadius: '4px' }}>
+          {error}
+        </div>
+      )}
       {bots.length === 0 ? (
         <p style={{ color: '#999', fontStyle: 'italic' }}>暂无机器人，请点击 "+ Bot" 创建</p>
       ) : (

@@ -29,9 +29,10 @@ describe('api', () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: false,
         status: 400,
+        json: async () => ({ error: 'type must be VIP or NORMAL' }),
       } as Response);
 
-      await expect(createOrder('NORMAL')).rejects.toThrow('Failed to create order');
+      await expect(createOrder('NORMAL')).rejects.toThrow('type must be VIP or NORMAL');
     });
   });
 
@@ -65,6 +66,7 @@ describe('api', () => {
     it('should DELETE /api/bots', async () => {
       const mockFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
+        status: 204,
       } as Response);
 
       await removeBot();

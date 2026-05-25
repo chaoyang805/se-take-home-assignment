@@ -7,6 +7,7 @@ class OrderEventClientImpl {
   private listeners: Set<Listener> = new Set();
   private url: string;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempts = 0;
 
   constructor() {
     this.url = (import.meta.env.VITE_WS_URL || 'ws://localhost:3000') + '/ws';
@@ -15,7 +16,13 @@ class OrderEventClientImpl {
   connect(): void {
     if (this.ws?.readyState === WebSocket.OPEN) return;
 
+    console.log(`[WS] Connecting to ${this.url}...`);
     this.ws = new WebSocket(this.url);
+
+    this.ws.onopen = () => {
+      console.log('[WS] Connected');
+      this.reconnectAttempts = 0;
+    };
 
     this.ws.onmessage = (event) => {
       try {
@@ -23,17 +30,19 @@ class OrderEventClientImpl {
         for (const listener of this.listeners) {
           listener(message);
         }
-      } catch {
-        // ignore parse errors
+      } catch (err) {
+        console.warn('[WS] Failed to parse message:', err);
       }
     };
 
-    this.ws.onclose = () => {
+    this.ws.onclose = (event) => {
       this.ws = null;
+      console.log(`[WS] Disconnected (code: ${event.code})`);
       this.scheduleReconnect();
     };
 
     this.ws.onerror = () => {
+      console.error('[WS] Connection error');
       this.ws?.close();
     };
   }
@@ -53,12 +62,15 @@ class OrderEventClientImpl {
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer) return;
+    const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
+    this.reconnectAttempts++;
+    console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       if (this.listeners.size > 0) {
         this.connect();
       }
-    }, 3000);
+    }, delay);
   }
 
   private disconnect(): void {
@@ -68,6 +80,7 @@ class OrderEventClientImpl {
     }
     this.ws?.close();
     this.ws = null;
+    console.log('[WS] Disconnected (no listeners)');
   }
 }
 
