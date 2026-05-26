@@ -59,5 +59,16 @@ export function createRouter(orderService: OrderService, botService: BotService)
     }
   });
 
+  if (process.env.E2E_RESET === 'true') {
+    router.post('/api/test/reset', (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        orderService.reset();
+        res.status(204).send();
+      } catch (err) {
+        next(err);
+      }
+    });
+  }
+
   return router;
 }

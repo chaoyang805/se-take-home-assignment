@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { resetTestState } from './helpers';
+
+test.beforeEach(async ({ request }) => {
+  await resetTestState(request);
+});
 
 test.describe('Navigation', () => {
   test('should default to orders page', async ({ page }) => {

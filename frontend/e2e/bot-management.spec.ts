@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { resetTestState } from './helpers';
+
+test.beforeEach(async ({ request }) => {
+  await resetTestState(request);
+});
 
 test.describe('Bot Management', () => {
   test('should add a bot', async ({ page }) => {
@@ -56,16 +61,20 @@ test.describe('Bot Management', () => {
     await page.click('text=New Normal Order');
 
     const pendingSection = page.locator('h2:has-text("PENDING")').locator('..');
-    const orderNames = await pendingSection.locator('strong').allTextContents();
-    const vipName = orderNames[0]; // VIP always placed first
+    const vipName = await pendingSection.locator('text=VIP').locator('..').locator('strong').textContent();
 
     await page.click('text=Bot 管理');
     await page.click('text=+ Bot');
+    await expect(page.locator(`text=处理中: ${vipName}`)).toBeVisible();
     await page.click('text=- Bot');
 
+    const ordersLoaded = page.waitForResponse(
+      (resp) => resp.url().includes('/api/orders') && resp.status() === 200,
+    );
     await page.click('text=我的订单');
+    await ordersLoaded;
 
     // VIP order should be back in PENDING
-    await expect(pendingSection.locator(`text=${vipName}`)).toBeVisible({ timeout: 5000 });
+    await expect(pendingSection.locator(`text=${vipName}`)).toBeVisible();
   });
 });

@@ -12,4 +12,8 @@ export class OrderService {
   getOrders(): OrderProps[] {
     return this.engine.getOrders().map((o) => o.toJSON());
   }
+
+  reset(): void {
+    this.engine.reset();
+  }
 }

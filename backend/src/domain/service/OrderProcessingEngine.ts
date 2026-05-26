@@ -54,6 +54,16 @@ export class OrderProcessingEngine {
     return [...this.bots];
   }
 
+  reset(): void {
+    for (const bot of this.bots) {
+      if (bot.timerId) clearTimeout(bot.timerId);
+    }
+    this.orders = [];
+    this.bots = [];
+    this.nextOrderId = 1;
+    this.nextBotId = 1;
+  }
+
   addListener(event: string, fn: (payload: unknown) => void): void {
     this.events.on(event as OrderEvent, fn);
   }

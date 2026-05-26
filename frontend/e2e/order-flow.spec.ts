@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { resetTestState } from './helpers';
+
+test.beforeEach(async ({ request }) => {
+  await resetTestState(request);
+});
 
 test.describe('Order Flow', () => {
   test('should create Normal order and see it in PENDING', async ({ page }) => {
