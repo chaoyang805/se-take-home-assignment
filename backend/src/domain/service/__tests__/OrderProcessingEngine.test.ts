@@ -249,6 +249,27 @@ describe('OrderProcessingEngine', () => {
 
       expect(listener).not.toHaveBeenCalled();
     });
+
+    it('should dispatch returned order to an idle bot', () => {
+      engine.createOrder('NORMAL');
+      engine.addBot();
+      vi.advanceTimersByTime(5_000);
+
+      engine.createOrder('NORMAL');
+      engine.addBot();
+      vi.advanceTimersByTime(5_000);
+
+      engine.removeBot();
+
+      const bots = engine.getBots();
+      expect(bots).toHaveLength(1);
+      expect(bots[0].status).toBe('PROCESSING');
+      expect(bots[0].currentOrderId).toBe(2);
+      expect(engine.getOrders().find((o) => o.id === 2)?.status).toBe('PROCESSING');
+
+      vi.advanceTimersByTime(10_000);
+      expect(engine.getOrders().find((o) => o.id === 2)?.status).toBe('COMPLETE');
+    });
   });
 
   describe('getOrders', () => {

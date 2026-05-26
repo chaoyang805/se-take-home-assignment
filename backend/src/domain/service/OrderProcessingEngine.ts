@@ -46,6 +46,8 @@ export class OrderProcessingEngine {
         order.returnToPending();
       }
     }
+
+    this.dispatchProcessing();
   }
 
   getBots(): Bot[] {
