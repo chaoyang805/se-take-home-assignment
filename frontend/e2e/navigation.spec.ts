@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { removeAllBots } from './helpers';
+
+test.beforeEach(async ({ request }) => {
+  await removeAllBots(request);
+});
 
 test.describe('Navigation', () => {
   test('should default to orders page', async ({ page }) => {
