@@ -10,9 +10,9 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'cd ../backend && E2E_RESET=true npx tsx src/server.ts',
+      command: 'cd ../backend && npx tsx src/server.ts',
       port: 3000,
-      reuseExistingServer: false,
+      reuseExistingServer: true,
       timeout: 10000,
     },
     {

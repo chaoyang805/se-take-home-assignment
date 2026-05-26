@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { resetTestState } from './helpers';
+import { removeAllBots } from './helpers';
 
 test.beforeEach(async ({ request }) => {
-  await resetTestState(request);
+  await removeAllBots(request);
 });
 
 test.describe('Navigation', () => {
